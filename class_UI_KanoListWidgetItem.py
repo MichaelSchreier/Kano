@@ -151,7 +151,6 @@ class KanoListWidgetItem(QtWidgets.QListWidgetItem):
 					else:
 						queue_out.put("archive locked")
 				except (Exception):
-					raise
 					queue_out.put("error")
 					run = False
 

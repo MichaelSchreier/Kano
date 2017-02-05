@@ -181,9 +181,13 @@ class KanoUIMain(QtWidgets.QWidget):
 		}
 		
 		#--load exisiting settings on startup
-		settings_file = "settings.cfg"
-		if os.path.isfile(settings_file):
-			with open(settings_file, 'r') as file:
+		if getattr(sys, 'frozen', False):
+			application_path = os.path.dirname(sys.executable)
+		elif __file__:
+			application_path = os.path.dirname(os.path.realpath(__file__))
+		self.settings_file = application_path + "\\settings.cfg"
+		if os.path.isfile(self.settings_file):
+			with open(self.settings_file, 'r') as file:
 				tmp = yaml.load(file)
 				#cheap consistency check here
 				if 'enable_fuzzy_matching' in tmp:
@@ -286,7 +290,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			'enable_global_register': self.ui_settings_dialog.checkbox_global_register.isChecked(),
 			'global_register_length': self.ui_settings_dialog.spinbox_register_length.value()
 		}
-		with open('settings.cfg', 'w+') as file:
+		with open(self.settings_file, 'w+') as file:
 			file.write(yaml.dump(self.settings, default_flow_style=False))
 		
 

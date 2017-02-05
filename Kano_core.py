@@ -8,6 +8,7 @@ Created on Tue Aug 30 19:50:11 2016
 import yaml
 import shutil
 import os
+import sys
 import getpass
 import hashlib
 import base64
@@ -162,7 +163,11 @@ def createGlobalRegister():
 	creates a text file in the applications's directory to store a history archives
 	generated previously
 	"""
-	register = os.path.dirname(os.path.realpath(__file__)) + "\\globalRegister.txt"
+	if getattr(sys, 'frozen', False):
+		application_path = os.path.dirname(sys.executable)
+	elif __file__:
+		application_path = os.path.dirname(os.path.realpath(__file__))
+	register = application_path + "\\globalRegister.txt"
 	if not os.path.exists(register):
 		open(register, 'a').close()
 
