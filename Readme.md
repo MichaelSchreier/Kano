@@ -1,4 +1,4 @@
-Link to Windows binary: [Kano.zip](https://github.com/MichaelSchreier/Kano/releases/download/v1.1/Kano.zip)
+Link to Windows binary: [Kano.zip](https://github.com/MichaelSchreier/Kano/releases/download/v1.1.1/Kano.zip)
 
 
 # Kano
