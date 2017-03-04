@@ -1,3 +1,6 @@
+Link to Windows binary: [Kano.zip](https://github.com/MichaelSchreier/Kano/releases/download/v1.1/Kano.zip)
+
+
 # Kano
 ---
 Kano aims to make versioning and archiving files as simple as possible. Featuring a simplistic UI and relying only on folders and human readable text files for version tracking it is easy to use and transparent even to non tech-savvy end users.
