@@ -3,7 +3,7 @@ import uuid
 import Kano_core
 import time
 import datetime
-import base64
+import binascii
 
 from PyQt5 import QtGui, QtWidgets
 from queue import Queue
@@ -124,22 +124,28 @@ class KanoListWidgetItem(QtWidgets.QListWidgetItem):
 							)[0]
 						)[0]
 						
-						Kano_core.safecopy(file, archive_folder, tmp_filename)
+						Kano_core.safecopy(
+							file, 
+							archive_folder, 
+							tmp_filename, 
+							settings['zip_files']
+						)
 						
 						tmp_original_name = os.path.splitext(os.path.basename(file))[0]
 						
 						Kano_core.updateJournal(
 							journal_file,
 							Kano_core.createJournalEntry(
-							base64.urlsafe_b64encode(Kano_core.checksum(file)).decode('utf-8'),
-							None,
-							Kano_core.getUID(),
-							#%z returns empty string because the offset is for utcnow 
-							#(which has none); so local time has to be used here...
-							datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S (UTC)"),
-							os.path.getsize(file),
-							tmp_original_name
-							))
+								binascii.hexlify(Kano_core.checksum(file)).decode('utf-8').upper(),
+								"File has been zipped" if settings['zip_files'] == True else None,
+								Kano_core.getUID(),
+								#%z returns empty string because the offset is for utcnow 
+								#(which has none); so local time has to be used here...
+								datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S (UTC)"),
+								os.path.getsize(file),
+								tmp_original_name
+							)
+						)
 						
 						os.remove(lockfile)
 						Kano_core.updateGlobalRegister(

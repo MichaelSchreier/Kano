@@ -9,8 +9,6 @@ STYLE_ITEM_LIST = (
 		background-repeat: false;
 		background-position: center;
 		background-attachment: fixed;
-		border: 1px solid;
-		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
 	}
 	"""
 )
@@ -18,11 +16,10 @@ STYLE_ITEM_LIST = (
 STYLE_MAIN_WINDOW = (
 	"""
 	QToolBar {
-		border: 1px solid;
-		background-color: rgb(247, 247, 247);
+		border-width: 0px;
+		background-color: rgb(150, 150, 150);
 		border-top-left-radius: 5px;
 		border-top-right-radius: 5px;
-		border-color: rgb(232, 232, 232);
 	}
 	QToolButton {
 		border: 0px;
@@ -31,12 +28,12 @@ STYLE_MAIN_WINDOW = (
 	QToolButton:hover {
 		border: 0px;
 		border-radius: 5px;
-		background: rgb(217, 217, 217);
+		background: rgb(99, 99, 99);
 	}
 	QToolButton:checked {
 		border: 0px;
 		border-radius: 5px;
-		background: rgb(189, 189, 189);
+		background: rgb(217, 217, 217);
 	}
 	QListWidget::item:selected:active {
 		background: rgba(189, 189, 189, 0.95);
@@ -80,8 +77,6 @@ STYLE_ADJUST_ITEM_LIST = (
 	QListWidget {
 		outline: 0;
 		background-color: rgb(247, 247, 247);
-		border: 1px solid;
-		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
 		}
 	"""
 )
@@ -91,9 +86,7 @@ STYLE_SET_ARCHIVE_DIALOG = (
 	QDialog {
 		background-color: rgb(247, 247, 247);
 		border-bottom-left-radius: 5px;
-		border-bottom-right-radius: 5px;
-		border: 1px solid;
-		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
+		border-bottom-right-radius: 5px;	
 	}
 	QPushButton {
 		border-width: 0px;
@@ -134,9 +127,7 @@ STYLE_NEW_ITEM_DIALOG = (
 	QDialog {
 		background-color: rgb(247, 247, 247);
 		border-bottom-left-radius: 5px;
-		border-bottom-right-radius: 5px;
-		border: 1px solid;
-		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);		
+		border-bottom-right-radius: 5px;	
 	}
 	QPushButton {
 		border-width: 0px;
@@ -158,9 +149,7 @@ STYLE_SETTINGS_WINDOW = (
 	QDialog {
 		background-color: rgb(247, 247, 247);
 		border-bottom-left-radius: 5px;
-		border-bottom-right-radius: 5px;
-		border: 1px solid;
-		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
+		border-bottom-right-radius: 5px;	
 	}
 	QSpinBox {
 		border-width: 0px;

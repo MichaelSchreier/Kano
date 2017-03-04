@@ -13,6 +13,8 @@ import getpass
 import hashlib
 import base64
 import datetime
+import zlib
+import zipfile
 from uuid import getnode as get_mac
 from fuzzywuzzy import process as get_best_match
 from collections import OrderedDict
@@ -94,22 +96,31 @@ def getUID(length = 6):
 	"""
 	mac = get_mac()
 	user = getpass.getuser()
-	h = hashlib.sha1()
+	h = hashlib.sha256()
 	type(bytes)
 	h.update(str.encode(str(mac) + str(user)))
 	uid_hash = h.digest()
 	return base64.urlsafe_b64encode(uid_hash).decode('utf-8')[:length]
 	
 
-def checksum(file_name):
+def checksum(file_name, algorithm='sha256'):
 	"""
-	returns the md5 of the input_file
+	returns the hash of the input_file
 	"""
-	hash_md5 = hashlib.md5()
-	with open(file_name, "rb") as f:
-		for chunk in iter(lambda: f.read(4096), b""):
-			hash_md5.update(chunk)
-	return hash_md5.digest()
+	if algorithm == 'sha256':
+		hash = hashlib.sha256()
+		with open(file_name, "rb") as f:
+			for chunk in iter(lambda: f.read(4096), b""):
+				hash.update(chunk)
+		return hash.digest()
+	elif algorithm == 'crc32':
+		tmp_hash = 0
+		with open(file_name, "rb") as f:
+			for chunk in iter(lambda: f.read(4096), b""):
+				tmp_hash = zlib.crc32(chunk, tmp_hash)
+		return (tmp_hash & 0xFFFFFFFF)
+	else:
+		raise NotImplementedError
 
 	
 class ChecksumError(Exception):
@@ -133,9 +144,9 @@ def uniquename(file_name, time_stamp=None):
 	return base_name + '_' + time_stamp + extension
 	
 	
-def safecopy(sourcefile, directory, target_name=None):
+def safecopy(sourcefile, directory, target_name=None, zip_file=False):
 	"""
-	copies a file and verfies the checksum of the copied file
+	copies a file, conditionally zips it, and verfies the checksum of the copied file
 	"""
 	if not os.path.isdir(directory):
 		directory = os.path.dirname(directory)
@@ -152,10 +163,18 @@ def safecopy(sourcefile, directory, target_name=None):
 	
 	archive_path = directory + "\\" + archive_name
 
-	shutil.copy2(sourcefile, archive_path)
-	
-	if checksum(archive_path) != checksum(sourcefile):
-		raise ChecksumError
+	if not zip_file:
+		shutil.copy2(sourcefile, archive_path)
+		if checksum(archive_path, 'crc32') != checksum(sourcefile, 'crc32'):
+			raise ChecksumError
+	else:
+		archive_path_zip = os.path.splitext(archive_path)[0] + ".zip"
+		with zipfile.ZipFile(archive_path_zip, 'w') as zipped_file:
+			zipped_file.write(sourcefile, file_name)
+		#reopen file and check integrity
+		with zipfile.ZipFile(archive_path_zip, 'r') as zipped_file:		
+			if zipped_file.testzip() != None:
+				raise ChecksumError
 
 		
 def createGlobalRegister():
@@ -231,15 +250,11 @@ def findName(file_path, fuzzy_matching=False, check_global_register=True, tresho
 				)[0]#take only name of file
 			)
 		else:
-			print(names)
-			print(file_name)
 			matches = [
 				[m, 100] for m in names if os.path.splitext(
 					os.path.splitext(os.path.splitext(os.path.basename(m))[0])[0]
 				)[0] == file_name
 			]
-			print(names)
-			print(matches)
 			matches.append(["", 0])#add zero element
 		max_match = matches[0][1]
 		matches = [m for m in matches if m[1] == max_match and m[1] >= treshold]

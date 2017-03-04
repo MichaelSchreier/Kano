@@ -170,6 +170,9 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.ui_settings_dialog.button_clear_global_register.clicked.connect(
 			lambda: Kano_core.clearGlobalRegister()
 		)
+		self.ui_settings_dialog.checkbox_zip_files.clicked.connect(
+			lambda: self.updateSettings()
+		)
 		
 		#handling of application settings
 		#--define default values
@@ -177,7 +180,8 @@ class KanoUIMain(QtWidgets.QWidget):
 			'enable_fuzzy_matching': False,
 			'fuzzy_matching_treshold': 70,
 			'enable_global_register': True,
-			'global_register_length': 100
+			'global_register_length': 100,
+			'zip_files': False
 		}
 		
 		#--load exisiting settings on startup
@@ -212,6 +216,13 @@ class KanoUIMain(QtWidgets.QWidget):
 		)
 		self.ui_settings_dialog.spinbox_register_length.setValue(
 			self.settings['global_register_length']
+		)
+		if self.settings['zip_files']:
+			tmp = 2
+		else:
+			tmp = 0
+		self.ui_settings_dialog.checkbox_zip_files.setChecked(
+			QtCore.Qt.CheckState(tmp)
 		)
 		
 		#toolbar styling and button behaviour
@@ -288,7 +299,8 @@ class KanoUIMain(QtWidgets.QWidget):
 			'enable_fuzzy_matching': self.ui_settings_dialog.checkbox_fuzzy_matching.isChecked(),
 			'fuzzy_matching_treshold': self.ui_settings_dialog.spinbox_fuzzy_matching_treshold.value(),
 			'enable_global_register': self.ui_settings_dialog.checkbox_global_register.isChecked(),
-			'global_register_length': self.ui_settings_dialog.spinbox_register_length.value()
+			'global_register_length': self.ui_settings_dialog.spinbox_register_length.value(),
+			'zip_files': self.ui_settings_dialog.checkbox_zip_files.isChecked()
 		}
 		with open(self.settings_file, 'w+') as file:
 			file.write(yaml.dump(self.settings, default_flow_style=False))
@@ -403,7 +415,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_settings_dialog"] = self.ui_settings_dialog.isVisible()
 			self.window_state["ui_new_item_dialog"] = True
 
-			self.ui_main_list.setMaximumHeight(35)
+			self.ui_main_list.setMaximumHeight(33)
 			self.ui_main_list.setStyleSheet(STYLE_ADJUST_ITEM_LIST)
 
 			for row in range(self.ui_main_list.count()):

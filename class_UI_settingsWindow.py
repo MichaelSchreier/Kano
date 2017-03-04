@@ -55,6 +55,13 @@ class SettingsWindow(QtWidgets.QDialog):#when using QtWidgets.QWidget background
 		
 		self.button_clear_global_register = QtWidgets.QPushButton(self)
 		self.button_clear_global_register.setText("clear")
+		
+		#--setting 5
+		self.label_zip_files = QtWidgets.QLabel()
+		self.label_zip_files.setText("Zip archived files")
+		
+		self.checkbox_zip_files = QtWidgets.QCheckBox()
+		self.checkbox_zip_files.setCheckState(QtCore.Qt.CheckState(0))
 		#---------------------------------------------------------------------------------
 		
 		#layout
@@ -69,4 +76,6 @@ class SettingsWindow(QtWidgets.QDialog):#when using QtWidgets.QWidget background
 		self.layout.addWidget(self.spinbox_register_length, 3, 1)
 		self.layout.addWidget(self.label_clear_global_register, 4, 0)
 		self.layout.addWidget(self.button_clear_global_register, 4, 1)
+		self.layout.addWidget(self.label_zip_files, 5, 0)
+		self.layout.addWidget(self.checkbox_zip_files, 5, 1)
 		self.setLayout(self.layout)

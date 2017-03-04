@@ -1,0 +1,9 @@
+Version 1.1 [04.03.2017]
+******************************************************************************************
+Additions:
+-setting to zip files in archive
+
+Changes/Fixes:
+-checksum recorded in log files now generated via sha256
+-file integrity check now performed via CRC32 rather than md5
+-slight changes to the UI to give a lighter appearance
