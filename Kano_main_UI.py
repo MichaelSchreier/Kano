@@ -107,7 +107,6 @@ class KanoUIMain(QtWidgets.QWidget):
 		#more UI settings
 		self.ui_main_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 		self.ui_main_list.verticalScrollBar().setSingleStep(6)
-		self.ui_main_list.setAcceptDrops(True)
 		self.ui_main_list.setIconSize(QtCore.QSize(16, 16))
 		self.ui_main_list.setFrameStyle(QtWidgets.QFrame.NoFrame)
 		self.ui_main_list.setStyleSheet(STYLE_ITEM_LIST)
@@ -371,6 +370,8 @@ class KanoUIMain(QtWidgets.QWidget):
 	#handling of window visibility could probably be unified to reduce redundancy
 	def toggleAboutWindow(self, button_state):
 		if button_state:
+			self.setAcceptDrops(False)
+			
 			self.window_state["ui_main_list"] = self.ui_main_list.isVisible()
 			self.window_state["ui_new_item_dialog"] = self.ui_new_item_dialog.isVisible()
 			self.window_state["ui_set_archive_dialog"] = self.ui_set_archive_dialog.isVisible()
@@ -382,6 +383,10 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_settings_dialog.setVisible(False)
 			self.ui_about_dialog.setVisible(True)
 		else:
+			#switch back to accepting drops only if items do not currently require user interaction
+			if not self.window_state["ui_new_item_dialog"] and not self.window_state["ui_set_archive_dialog"]:
+				self.setAcceptDrops(True)
+			
 			self.ui_main_list.setVisible(self.window_state["ui_main_list"])
 			self.ui_new_item_dialog.setVisible(self.window_state["ui_new_item_dialog"])
 			self.ui_set_archive_dialog.setVisible(self.window_state["ui_set_archive_dialog"])
@@ -390,6 +395,8 @@ class KanoUIMain(QtWidgets.QWidget):
 			
 	def toggleSettingsWindow(self, button_state):
 		if button_state:
+			self.setAcceptDrops(False)
+			
 			self.window_state["ui_main_list"] = self.ui_main_list.isVisible()
 			self.window_state["ui_new_item_dialog"] = self.ui_new_item_dialog.isVisible()
 			self.window_state["ui_set_archive_dialog"] = self.ui_set_archive_dialog.isVisible()
@@ -401,6 +408,10 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_about_dialog.setVisible(False)
 			self.ui_settings_dialog.setVisible(True)
 		else:
+			#switch back to accepting drops only if items do not currently require user interaction
+			if not self.window_state["ui_new_item_dialog"] and not self.window_state["ui_set_archive_dialog"]:
+				self.setAcceptDrops(True)
+			
 			self.ui_main_list.setVisible(self.window_state["ui_main_list"])
 			self.ui_new_item_dialog.setVisible(self.window_state["ui_new_item_dialog"])
 			self.ui_set_archive_dialog.setVisible(self.window_state["ui_set_archive_dialog"])

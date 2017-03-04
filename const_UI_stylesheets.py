@@ -71,6 +71,8 @@ STYLE_MAIN_WINDOW = (
 		background-color: rgb(247, 247, 247);
 		border-bottom-left-radius: 5px;
 		border-bottom-right-radius: 5px;
+		border: 1px solid;
+		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
 	}
 	"""
 )
@@ -96,16 +98,19 @@ STYLE_SET_ARCHIVE_DIALOG = (
 		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);
 	}
 	QPushButton {
-		border-width: 0px;
-		background-color: rgb(150, 150, 150);
-		border-radius: 2px;
+		background-color: rgb(232, 232, 232);
+		border-radius: 3px;
 		height: 20;
+		border: 1px solid;
+		border-color: rgb(217, 217, 217);
 	}
 	QPushButton:hover {
-		background-color: rgb(189, 189, 189);
+		background-color: rgb(217, 217, 217);
+		border-color: rgb(189, 189, 189);
 	}
 	QPushButton:pressed {
-		background-color: rgb(217, 217, 217);
+		background-color: rgb(189, 189, 189);
+		border-color: rgb(150, 150, 150);
 	}
 	QLineEdit {
 		height: 18;
@@ -139,16 +144,19 @@ STYLE_NEW_ITEM_DIALOG = (
 		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);		
 	}
 	QPushButton {
-		border-width: 0px;
-		background-color: rgb(150, 150, 150);
-		border-radius: 2px;
+		background-color: rgb(232, 232, 232);
+		border-radius: 3px;
 		height: 20;
+		border: 1px solid;
+		border-color: rgb(217, 217, 217);
 	}
 	QPushButton:hover {
-		background-color: rgb(189, 189, 189);
+		background-color: rgb(217, 217, 217);
+		border-color: rgb(189, 189, 189);
 	}
 	QPushButton:pressed {
-		background-color: rgb(217, 217, 217);
+		background-color: rgb(189, 189, 189);
+		border-color: rgb(150, 150, 150);
 	}
 	"""
 )
@@ -157,6 +165,9 @@ STYLE_SETTINGS_WINDOW = (
 	"""
 	QDialog {
 		background-color: rgb(247, 247, 247);
+	}
+	QScrollArea {
+		background-color: rgb(247, 247, 247);
 		border-bottom-left-radius: 5px;
 		border-bottom-right-radius: 5px;
 		border: 1px solid;
@@ -164,10 +175,11 @@ STYLE_SETTINGS_WINDOW = (
 	}
 	QSpinBox {
 		border-width: 0px;
-		background-color: rgb(150, 150, 150);
+		background-color: rgb(232, 232, 232);
 		selection-background-color: rgb(99, 99, 99);
-		border-radius: 2px;
+		border: 1px solid;
 		height: 20;
+		border-color: rgb(217, 217, 217);
 	}
 	QCheckBox::indicator {
 		width: 20px;
@@ -192,10 +204,10 @@ STYLE_SETTINGS_WINDOW = (
 		border-image: url(img/arrow_up.png) 1;
 	}
 	QSpinBox::up-button:hover {
-		background-color: rgb(189, 189, 189);
+		background-color: rgb(217, 217, 217);
 	}
 	QSpinBox::up-button:pressed {
-		background-color: rgb(217, 217, 217);
+		background-color: rgb(189, 189, 189);
 	}
 	QSpinBox::down-button {
 		subcontrol-origin: border;
@@ -205,22 +217,25 @@ STYLE_SETTINGS_WINDOW = (
 		border-top-width: 0;
 	}
 	QSpinBox::down-button:hover {
-		background-color: rgb(189, 189, 189);
+		background-color: rgb(217, 217, 217);
 	}
 	QSpinBox::down-button:pressed {
-		background-color: rgb(217, 217, 217);
-	}
-	QPushButton {
-		border-width: 0px;
-		background-color: rgb(150, 150, 150);
-		border-radius: 2px;
-		height: 20;
-	}
-	QPushButton:hover {
 		background-color: rgb(189, 189, 189);
 	}
-	QPushButton:pressed {
+	QPushButton {
+		background-color: rgb(232, 232, 232);
+		border-radius: 3px;
+		height: 20;
+		border: 1px solid;
+		border-color: rgb(217, 217, 217);
+	}
+	QPushButton:hover {
 		background-color: rgb(217, 217, 217);
+		border-color: rgb(189, 189, 189);
+	}
+	QPushButton:pressed {
+		background-color: rgb(189, 189, 189);
+		border-color: rgb(150, 150, 150);
 	}
 	"""
 )

@@ -1,3 +1,11 @@
+Version 1.1.1 [04.03.2017]
+******************************************************************************************
+Changes/Fixes:
+-some more UI adjustments
+-settings and about window can no longer confuse Kano as to whether file drops are allowed 
+ or not
+
+
 Version 1.1 [04.03.2017]
 ******************************************************************************************
 Additions:
