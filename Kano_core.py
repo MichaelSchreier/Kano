@@ -195,7 +195,11 @@ def readGlobalRegister():
 	"""
 	reads the archive history
 	"""
-	register = os.path.dirname(os.path.realpath(__file__)) + "\\globalRegister.txt"
+	if getattr(sys, 'frozen', False):
+		application_path = os.path.dirname(sys.executable)
+	elif __file__:
+		application_path = os.path.dirname(os.path.realpath(__file__))
+	register = application_path + "\\globalRegister.txt"
 	with open(register, 'r') as f:
 		content = f.read().splitlines()
 	return content
@@ -206,7 +210,11 @@ def updateGlobalRegister(name=None, max_length=100):
 	adds a new entry to the archive history and truncates the history should it exceed
 	the limit given
 	"""
-	register = os.path.dirname(os.path.realpath(__file__)) + "\\globalRegister.txt"
+	if getattr(sys, 'frozen', False):
+		application_path = os.path.dirname(sys.executable)
+	elif __file__:
+		application_path = os.path.dirname(os.path.realpath(__file__))
+	register = application_path + "\\globalRegister.txt"
 	with open(register, 'r') as f:
 		content = f.read().splitlines()
 	if name:
@@ -221,7 +229,11 @@ def clearGlobalRegister():
 	"""
 	erases all entries in the archive history
 	"""
-	register = os.path.dirname(os.path.realpath(__file__)) + "\\globalRegister.txt"
+	if getattr(sys, 'frozen', False):
+		application_path = os.path.dirname(sys.executable)
+	elif __file__:
+		application_path = os.path.dirname(os.path.realpath(__file__))
+	register = application_path + "\\globalRegister.txt"
 	with open(register, 'w+') as f:
 		f.write("")
 
