@@ -1,3 +1,15 @@
+STYLE_TOOLTIP = (
+	"""
+	QToolTip {
+		color: rgb(74, 74, 74);
+		font: bold;
+		background-color: rgb(247, 247, 247);
+		border: 1px solid;
+		border-color: rgb(232, 232, 232);
+	}
+	"""
+)
+
 STYLE_ITEM_LIST = (
 	"""
 	QListWidget {
@@ -182,7 +194,7 @@ STYLE_SETTINGS_WINDOW = (
 		border-color: rgb(217, 217, 217);
 	}
 	QCheckBox::indicator {
-		width: 20px;
+		width: 40px;
 		height: 20px;
 	}
 	QCheckBox::indicator:unchecked {

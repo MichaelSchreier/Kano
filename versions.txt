@@ -1,7 +1,19 @@
+Version 1.2.0 [17.04.2017]
+******************************************************************************************
+Additions:
+-clicking on a file in the main list now reveals an additional row of buttons with options
+ to jump to the target (archive) directory, journal file, delete the file from the 
+ overview and redo the archiving operation
+
+Changes/Fixes:
+-Various tweaks to the UI appearance
+
+
 Version 1.1.2 [05.03.2017]
 ******************************************************************************************
 Changes/Fixes:
 -path to global register can now be resolved also in the compiled version
+
 
 Version 1.1.1 [04.03.2017]
 ******************************************************************************************

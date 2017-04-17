@@ -111,6 +111,8 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.ui_main_list.setFrameStyle(QtWidgets.QFrame.NoFrame)
 		self.ui_main_list.setStyleSheet(STYLE_ITEM_LIST)
 		self.ui_main_list.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+		self.ui_main_list.setSelectionMode(1)
+		
 		self.setStyleSheet(STYLE_MAIN_WINDOW)
 		
 		
@@ -172,6 +174,12 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.ui_settings_dialog.checkbox_zip_files.clicked.connect(
 			lambda: self.updateSettings()
 		)
+		
+		#--item list
+		self.ui_main_list.itemSelectionChanged.connect(
+			lambda: self.adjustItemSize()
+		)
+		
 		
 		#handling of application settings
 		#--define default values
@@ -251,7 +259,7 @@ class KanoUIMain(QtWidgets.QWidget):
 		toolbar_action_pin.setCheckable(True)
 		toolbar_action_pin.triggered.connect(lambda: self.pinWindow(toolbar_action_pin.isChecked()))
 		
-		#--more button behaviour
+		#--more toolbar button behaviour
 		toolbar_action_settings.triggered.connect(
 			lambda: self.toggleAboutWindow(False)
 		)
@@ -312,8 +320,10 @@ class KanoUIMain(QtWidgets.QWidget):
 		"""
 		for row in reversed(range(self.ui_main_list.count())):
 			item = self.ui_main_list.item(row)
-			if item.status == 'done' or item.status == 'error':
+			item_widget = self.ui_main_list.itemWidget(item)
+			if item_widget.status == 'done' or item_widget.status == 'error':
 				item = self.ui_main_list.takeItem(row)
+				del item_widget
 				del item
 				
 	
@@ -426,12 +436,14 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_settings_dialog"] = self.ui_settings_dialog.isVisible()
 			self.window_state["ui_new_item_dialog"] = True
 
-			self.ui_main_list.setMaximumHeight(33)
+			self.ui_main_list.setMaximumHeight(36+2)
+			self.ui_main_list.setSelectionMode(0)
 			self.ui_main_list.setStyleSheet(STYLE_ADJUST_ITEM_LIST)
 
 			for row in range(self.ui_main_list.count()):
 				item = self.ui_main_list.item(row)
-				if item.uuid != self.ui_new_item_dialog.item_uuid:
+				item_widget = self.ui_main_list.itemWidget(item)
+				if item_widget.uuid != self.ui_new_item_dialog.item_uuid:
 					item.setHidden(True)
 
 			self.ui_main_list.setVisible(True)
@@ -440,13 +452,16 @@ class KanoUIMain(QtWidgets.QWidget):
 		else:
 			self.setAcceptDrops(True)
 			self.ui_main_list.setMaximumHeight(16777215)#default value
+			self.ui_main_list.setSelectionMode(1)
 			self.ui_main_list.setStyleSheet(STYLE_ITEM_LIST)
 
 			for row in range(self.ui_main_list.count()):
 				item = self.ui_main_list.item(row)
 				item.setHidden(False)
-				if item.uuid == self.ui_new_item_dialog.item_uuid:
-					item.setStatus('error', 'aborted by user')
+				item_widget = self.ui_main_list.itemWidget(item)
+				if item_widget.uuid == self.ui_new_item_dialog.item_uuid:
+					item_widget.setStatus('error', 'aborted by user')
+					item_widget.queue_to_item.put('abort')
 
 			self.user_input = False
 
@@ -488,13 +503,15 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.ui_main_list.setVisible(True)
 		self.ui_about_dialog.setVisible(False)
 		self.ui_main_list.setMaximumHeight(16777215)#default value
+		self.ui_main_list.setSelectionMode(1)
 		self.ui_main_list.setStyleSheet(STYLE_ITEM_LIST)
 		
 		for row in range(self.ui_main_list.count()):
 				item = self.ui_main_list.item(row)
 				item.setHidden(False)
-				if item.uuid == dialog.item_uuid:
-					item.queue_to_item.put(dialog.journal)
+				item_widget = self.ui_main_list.itemWidget(item)
+				if item_widget.uuid == dialog.item_uuid:
+					item_widget.queue_to_item.put(dialog.journal)
 					
 		self.window_state["ui_about_dialog"] = False
 		self.window_state["ui_settings_dialog"] = False
@@ -506,15 +523,62 @@ class KanoUIMain(QtWidgets.QWidget):
 	def sendToItem(self, uuid, content):
 		for row in self.ui_main_list.count():
 			item = self.ui_main_list.item(row)
-			if item.uuid == uuid:
-				item.queue_to_item.put(content)
+			item_widget = self.ui_main_list.itemWidget(item)
+			if item_widget.uuid == uuid:
+				item_widget.queue_to_item.put(content)
 
 				
 	def createItem(self, name):
-		tmp_item = KanoListWidgetItem(path=name)
+		tmp_item = QtWidgets.QListWidgetItem()
+		tmp_item.setSizeHint(QtCore.QSize(300, 36))
+
+		tmp_widget = KanoListWidgetItem(path = name)
+		tmp_widget.button_remove.clicked.connect(
+			lambda: self.removeItem()
+		)
+		tmp_widget.button_target.clicked.connect(
+			lambda: tmp_widget.openTargetFolder()
+		)
+		tmp_widget.button_journal.clicked.connect(
+			lambda: tmp_widget.openTargetJournal()
+		)
+		tmp_widget.button_redo.clicked.connect(
+			lambda: tmp_widget.setStatus('waiting')
+		)
+
 		self.ui_main_list.addItem(tmp_item)
+		self.ui_main_list.setItemWidget(tmp_item, tmp_widget)
+		tmp_widget.show()
 	
-	#-------------------------------------------------------------------------------------	
+	def removeItem(self):
+		"""
+		Removes the currently selected item.
+		"""
+		for row in range(self.ui_main_list.count()):
+			item = self.ui_main_list.item(row)
+			item_widget = self.ui_main_list.itemWidget(item)
+			if item.isSelected():
+				item = self.ui_main_list.takeItem(row)
+				del item_widget
+				del item
+				break
+	
+	def adjustItemSize(self):
+		"""
+		Hides the button row of all items currently not selected; unhides the button row
+		of all items currently selected
+		"""
+		for row in range(self.ui_main_list.count()):
+			item = self.ui_main_list.item(row)
+			item_widget = self.ui_main_list.itemWidget(item)
+			if item.isSelected():
+				item_widget.setButtonVisibility(True)
+				item.setSizeHint(QtCore.QSize(300, 55))
+			else:
+				item_widget.setButtonVisibility(False)
+				item.setSizeHint(QtCore.QSize(300, 36))
+	
+	#-------------------------------------------------------------------------------------
 	#reimplementation of drag & drop behaviour for Kano
 	def dragEnterEvent(self, event):
 		super().dragEnterEvent(event)
@@ -535,31 +599,34 @@ class KanoUIMain(QtWidgets.QWidget):
 		"""
 		for row in range(self.ui_main_list.count()):
 			item = self.ui_main_list.item(row)
-			if not item.queue_from_item.empty() and self.user_input == False:
-				msgin = item.queue_from_item.get(timeout=0)
-				item.queue_from_item.task_done()
+			item_widget = self.ui_main_list.itemWidget(item)
+			if not item_widget.queue_from_item.empty() and self.user_input == False:
+				msgin = item_widget.queue_from_item.get(timeout=0)
+				item_widget.queue_from_item.task_done()
 
 				if msgin == 'journal not found':
-					item.setStatus('user input required')
-					self.ui_new_item_dialog.item_uuid = item.uuid
-					self.ui_new_item_dialog.file_name = item.path
+					item_widget.setStatus('user input required')
+					self.ui_new_item_dialog.item_uuid = item_widget.uuid
+					self.ui_new_item_dialog.file_name = item_widget.path
 					self.toggleNewItemDialog(True)
 					self.user_input = True
 				if msgin == 'done':
-					item.setStatus('done')
+					item_widget.setStatus('done')
 				if msgin == 'error':
-					item.setStatus('error')
+					item_widget.setStatus('error')
 				if msgin == 'archive locked':
-					item.setStatus('archive locked')
+					item_widget.setStatus('archive locked')
 				if msgin == 'processing file':
-					item.setStatus('processing file')
-			if item.status == 'waiting':
-				item.runCopy(self.settings)
-				item.setStatus('processing file')
+					item_widget.setStatus('processing file')
+			if item_widget.status == 'waiting':
+				item_widget.runCopy(self.settings)
+				item_widget.setStatus('processing file')
+				item.setSelected(False)
 
 def main():
 	app = QApplication(sys.argv)
 	app.setWindowIcon(QtGui.QIcon('img/archive.png'))
+	app.setStyleSheet(STYLE_TOOLTIP);
 	ex = KanoUIMain()
 	sys.exit(app.exec_())
 
