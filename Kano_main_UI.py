@@ -29,6 +29,7 @@ from const_UI_stylesheets import *
 from class_UI_aboutWindow import AboutWindow
 from class_UI_settingsWindow import SettingsWindow
 from class_UI_NewItemDialog import NewItemDialog
+from class_UI_CloseDialog import CloseDialog
 from class_UI_SetArchiveDialog import SetArchiveDialog
 from class_UI_toolbar import KanoToolBar
 from class_UI_KanoListWidgetItem import KanoListWidgetItem
@@ -73,7 +74,8 @@ class KanoUIMain(QtWidgets.QWidget):
 			"ui_new_item_dialog": False,
 			"ui_set_archive_dialog": False,
 			"ui_about_dialog": False,
-			"ui_settings_dialog": False
+			"ui_settings_dialog": False,
+			"ui_close_dialog": False
 		}
 
 
@@ -84,6 +86,7 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.ui_set_archive_dialog = SetArchiveDialog()
 		self.ui_about_dialog = AboutWindow()
 		self.ui_settings_dialog = SettingsWindow()
+		self.ui_close_dialog = CloseDialog()
 
 		
 		#Qt layout
@@ -97,11 +100,13 @@ class KanoUIMain(QtWidgets.QWidget):
 		self.vboxlayout.addWidget(self.ui_set_archive_dialog)
 		self.vboxlayout.addWidget(self.ui_about_dialog)
 		self.vboxlayout.addWidget(self.ui_settings_dialog)
+		self.vboxlayout.addWidget(self.ui_close_dialog)
 
 		self.ui_set_archive_dialog.setVisible(False)
 		self.ui_new_item_dialog.setVisible(False)
 		self.ui_about_dialog.setVisible(False)
 		self.ui_settings_dialog.setVisible(False)
+		self.ui_close_dialog.setVisible(False)
 		
 		
 		#more UI settings
@@ -180,6 +185,13 @@ class KanoUIMain(QtWidgets.QWidget):
 			lambda: self.adjustItemSize()
 		)
 		
+		#--close dialog
+		self.ui_close_dialog.button_close.clicked.connect(
+			lambda: self.close()
+		)
+		self.ui_close_dialog.button_cancel.clicked.connect(
+			lambda: self.toggleCloseDialog(False)
+		)
 		
 		#handling of application settings
 		#--define default values
@@ -296,7 +308,28 @@ class KanoUIMain(QtWidgets.QWidget):
 		toolbar.addAction(toolbar_action_quit)
 		
 		self.show()
-	
+		
+	def closeEvent(self, event):
+		"""
+		Reimplementation of the close event to prevent the user from accidentally closing
+		Kano when not all files have been processed yet.
+		"""
+		tmp = True
+		
+		for row in range(self.ui_main_list.count()):
+			item = self.ui_main_list.item(row)
+			item_widget = self.ui_main_list.itemWidget(item)
+			#"aborted by user" (="error") needs to be added to the list below
+			if item_widget.status in ["waiting", "user input required", "archive locked", "processing file"]:
+				tmp = False
+				break
+
+		if self.ui_close_dialog.isVisible() or tmp:
+			super(KanoUIMain, self).closeEvent(event)
+		else:
+			event.ignore()
+			self.toggleCloseDialog(True)
+
 		
 	def updateSettings(self):
 		"""
@@ -386,12 +419,14 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_new_item_dialog"] = self.ui_new_item_dialog.isVisible()
 			self.window_state["ui_set_archive_dialog"] = self.ui_set_archive_dialog.isVisible()
 			self.window_state["ui_settings_dialog"] = self.ui_settings_dialog.isVisible()
+			self.window_state["ui_close_dialog"] = False
 			
 			self.ui_main_list.setVisible(False)
 			self.ui_new_item_dialog.setVisible(False)
 			self.ui_set_archive_dialog.setVisible(False)
 			self.ui_settings_dialog.setVisible(False)
 			self.ui_about_dialog.setVisible(True)
+			self.ui_close_dialog.setVisible(False)
 		else:
 			#switch back to accepting drops only if items do not currently require user interaction
 			if not self.window_state["ui_new_item_dialog"] and not self.window_state["ui_set_archive_dialog"]:
@@ -402,6 +437,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_set_archive_dialog.setVisible(self.window_state["ui_set_archive_dialog"])
 			self.ui_settings_dialog.setVisible(self.window_state["ui_settings_dialog"])
 			self.ui_about_dialog.setVisible(False)
+			self.ui_close_dialog.setVisible(False)
 			
 	def toggleSettingsWindow(self, button_state):
 		if button_state:
@@ -411,12 +447,14 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_new_item_dialog"] = self.ui_new_item_dialog.isVisible()
 			self.window_state["ui_set_archive_dialog"] = self.ui_set_archive_dialog.isVisible()
 			self.window_state["ui_about_dialog"] = self.ui_about_dialog.isVisible()
+			self.window_state["ui_close_dialog"] = False
 
 			self.ui_main_list.setVisible(False)
 			self.ui_new_item_dialog.setVisible(False)
 			self.ui_set_archive_dialog.setVisible(False)
 			self.ui_about_dialog.setVisible(False)
 			self.ui_settings_dialog.setVisible(True)
+			self.ui_close_dialog.setVisible(False)
 		else:
 			#switch back to accepting drops only if items do not currently require user interaction
 			if not self.window_state["ui_new_item_dialog"] and not self.window_state["ui_set_archive_dialog"]:
@@ -427,6 +465,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_set_archive_dialog.setVisible(self.window_state["ui_set_archive_dialog"])
 			self.ui_about_dialog.setVisible(self.window_state["ui_about_dialog"])
 			self.ui_settings_dialog.setVisible(False)
+			self.ui_close_dialog.setVisible(False)
 
 	def toggleNewItemDialog(self, button_state):
 		if button_state:
@@ -435,6 +474,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_about_dialog"] = self.ui_about_dialog.isVisible()
 			self.window_state["ui_settings_dialog"] = self.ui_settings_dialog.isVisible()
 			self.window_state["ui_new_item_dialog"] = True
+			self.window_state["ui_close_dialog"] = False
 
 			self.ui_main_list.setMaximumHeight(36+2)
 			self.ui_main_list.setSelectionMode(0)
@@ -449,6 +489,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_main_list.setVisible(True)
 			self.ui_new_item_dialog.setVisible(True)
 			self.ui_about_dialog.setVisible(False)
+			self.ui_close_dialog.setVisible(False)
 		else:
 			self.setAcceptDrops(True)
 			self.ui_main_list.setMaximumHeight(16777215)#default value
@@ -469,6 +510,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.ui_about_dialog.setVisible(self.window_state["ui_about_dialog"])
 			self.ui_settings_dialog.setVisible(self.window_state["ui_settings_dialog"])
 			self.window_state["ui_new_item_dialog"] = False
+			self.window_state["ui_close_dialog"] = False
 
 	def toggleSetArchiveDialog(self, button_state):
 		if button_state:
@@ -485,6 +527,7 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_new_item_dialog"] = False
 			self.window_state["ui_main_list"] = True
 			self.window_state["ui_set_archive_dialog"] = True
+			self.window_state["ui_close_dialog"] = False
 		else:
 			self.ui_new_item_dialog.setVisible(True)
 			self.ui_set_archive_dialog.setVisible(False)
@@ -494,6 +537,36 @@ class KanoUIMain(QtWidgets.QWidget):
 			self.window_state["ui_new_item_dialog"] = True
 			self.window_state["ui_main_list"] = True
 			self.window_state["ui_set_archive_dialog"] = False
+			self.window_state["ui_close_dialog"] = False
+			
+	def toggleCloseDialog(self, button_state):
+		if button_state:
+			self.setAcceptDrops(False)
+			
+			self.window_state["ui_main_list"] = self.ui_main_list.isVisible()
+			self.window_state["ui_new_item_dialog"] = self.ui_new_item_dialog.isVisible()
+			self.window_state["ui_set_archive_dialog"] = self.ui_set_archive_dialog.isVisible()
+			self.window_state["ui_settings_dialog"] = self.ui_settings_dialog.isVisible()
+			self.window_state["ui_about_dialog"] = self.ui_settings_dialog.isVisible()
+			
+			self.ui_main_list.setVisible(False)
+			self.ui_new_item_dialog.setVisible(False)
+			self.ui_set_archive_dialog.setVisible(False)
+			self.ui_settings_dialog.setVisible(False)
+			self.ui_about_dialog.setVisible(False)
+			self.ui_close_dialog.setVisible(True)
+			
+		else:
+			#switch back to accepting drops only if items do not currently require user interaction
+			if not self.window_state["ui_new_item_dialog"] and not self.window_state["ui_set_archive_dialog"]:
+				self.setAcceptDrops(True)
+			
+			self.ui_main_list.setVisible(self.window_state["ui_main_list"])
+			self.ui_new_item_dialog.setVisible(self.window_state["ui_new_item_dialog"])
+			self.ui_set_archive_dialog.setVisible(self.window_state["ui_set_archive_dialog"])
+			self.ui_settings_dialog.setVisible(self.window_state["ui_settings_dialog"])
+			self.ui_about_dialog.setVisible(self.window_state["ui_about_dialog"])
+			self.ui_close_dialog.setVisible(False)
 	
 	def returnToMainView(self, dialog):
 		self.setAcceptDrops(True)
@@ -589,8 +662,13 @@ class KanoUIMain(QtWidgets.QWidget):
 		super().dropEvent(event)
 		urls = event.mimeData().text().split('\n')
 		for u in urls:
-			if u[:8] == 'file:///' and os.path.isfile(u[8:]):
-				self.createItem(u[8:].replace("/", "\\"))
+			if u[:5] == 'file:':
+				if os.path.isfile(u[8:]):
+					#regular paths
+					self.createItem(u[8:].replace("/", "\\"))
+				elif os.path.isfile(u[5:]):
+					#UNC paths
+					self.createItem(u[5:].replace("/", "\\"))
 	#-------------------------------------------------------------------------------------
 
 	def watchdog(self):
