@@ -251,3 +251,30 @@ STYLE_SETTINGS_WINDOW = (
 	}
 	"""
 )
+
+STYLE_CLOSE_DIALOG = (
+	"""
+	QDialog {
+		background-color: rgb(247, 247, 247);
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+		border: 1px solid;
+		border-color: rgb(254, 254, 254) rgb(232, 232, 232) rgb(232, 232, 232) rgb(232, 232, 232);		
+	}
+	QPushButton {
+		background-color: rgb(232, 232, 232);
+		border-radius: 3px;
+		height: 20;
+		border: 1px solid;
+		border-color: rgb(217, 217, 217);
+	}
+	QPushButton:hover {
+		background-color: rgb(217, 217, 217);
+		border-color: rgb(189, 189, 189);
+	}
+	QPushButton:pressed {
+		background-color: rgb(189, 189, 189);
+		border-color: rgb(150, 150, 150);
+	}
+	"""
+)
