@@ -1,3 +1,9 @@
+Version 1.2.3 [11.08.2017]
+******************************************************************************************
+Changes/Fixes:
+-Individually removing an item when it is the sole existing one no longer crashes Kano
+
+
 Version 1.2.2 [09.08.2017]
 ******************************************************************************************
 Changes/Fixes:

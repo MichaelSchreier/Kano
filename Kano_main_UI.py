@@ -644,12 +644,13 @@ class KanoUIMain(QtWidgets.QWidget):
 		for row in range(self.ui_main_list.count()):
 			item = self.ui_main_list.item(row)
 			item_widget = self.ui_main_list.itemWidget(item)
-			if item.isSelected():
-				item_widget.setButtonVisibility(True)
-				item.setSizeHint(QtCore.QSize(300, 55))
-			else:
-				item_widget.setButtonVisibility(False)
-				item.setSizeHint(QtCore.QSize(300, 36))
+			if item_widget:
+				if item.isSelected():
+					item_widget.setButtonVisibility(True)
+					item.setSizeHint(QtCore.QSize(300, 55))
+				else:
+					item_widget.setButtonVisibility(False)
+					item.setSizeHint(QtCore.QSize(300, 36))
 	
 	#-------------------------------------------------------------------------------------
 	#reimplementation of drag & drop behaviour for Kano
