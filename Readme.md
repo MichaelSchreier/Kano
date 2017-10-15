@@ -20,7 +20,7 @@ Kano is not intended to replace fully featured versioning solutions such as git,
 
 ---
 ### Source dependencies
-Kano is built on Python 3 as well the following libraries:
+Kano is built on Python 3 as well as the following libraries:
 + [PyQt5](https://www.riverbankcomputing.com/software/pyqt/download5) for the UI as well as some other features
 + [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) for matching files and finding existing archives with slightly different names, e.g. *document_v1.docx* and *document_v2.docx* (needs to be turned on settings menu)
 + [Entypo+](http://www.entypo.com) for all UI icons
